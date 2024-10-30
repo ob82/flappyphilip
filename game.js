@@ -6,8 +6,8 @@ let bird = {
     x: 50,
     y: canvas.height/2,
     velocity: 0,
-    gravity: 0.2,
-    jump: -12,
+    gravity: 0.5,
+    jump: -10,
     radius: 25
 };
 
