@@ -12,6 +12,7 @@ let bird = {
 };
 
 let storms = [];
+let waves = [];
 let gameOver = false;
 let score = 0;
 
@@ -22,9 +23,57 @@ philippineFlag.src = 'philippine.gif';
 const floodImage = new Image();
 floodImage.src = '120814035457-phillipines-8-14-a.jpg';
 
+// Wave creation
+function createWave() {
+    waves.push({
+        x: canvas.width,
+        y: canvas.height - 40, // Position waves at bottom
+        width: 80,
+        height: 40,
+        speed: 2,
+        amplitude: 10,
+        frequency: 0.02,
+        offset: Math.random() * Math.PI * 2 // Random wave phase
+    });
+}
+
+// Draw waves
+function drawWaves() {
+    ctx.save();
+    waves.forEach(wave => {
+        // Create wave pattern
+        ctx.beginPath();
+        ctx.moveTo(wave.x, wave.y);
+        
+        // Draw wave shape
+        for(let i = 0; i <= wave.width; i++) {
+            const y = wave.y + Math.sin(wave.offset + i * wave.frequency) * wave.amplitude;
+            ctx.lineTo(wave.x + i, y);
+        }
+        
+        // Complete wave shape
+        ctx.lineTo(wave.x + wave.width, canvas.height);
+        ctx.lineTo(wave.x, canvas.height);
+        ctx.closePath();
+
+        // Create gradient for wave
+        const gradient = ctx.createLinearGradient(0, wave.y, 0, canvas.height);
+        gradient.addColorStop(0, 'rgba(30, 144, 255, 0.7)');
+        gradient.addColorStop(1, 'rgba(0, 90, 190, 0.9)');
+        
+        ctx.fillStyle = gradient;
+        ctx.fill();
+        
+        // Update wave position
+        wave.x -= wave.speed;
+        wave.offset += 0.05; // Animate wave movement
+    });
+    ctx.restore();
+}
+
 // Enhanced storm creation
 function createStorm() {
-    let gap = 300;
+    let gap = 280;
     let stormHeight = 60;
     storms.push({
         x: canvas.width,
@@ -39,19 +88,17 @@ function createStorm() {
     });
 }
 
-// Enhanced storm drawing
+// Draw storm
 function drawStorm(storm) {
     ctx.save();
     ctx.translate(storm.x + storm.width/2, storm.y + storm.height/2);
     ctx.rotate(storm.rotation);
     ctx.scale(storm.scale, storm.scale);
     
-    // Create multi-layered cyclone effect
     for(let layer = 0; layer < storm.layers; layer++) {
         ctx.beginPath();
         ctx.globalAlpha = storm.opacity - (layer * 0.1);
         
-        // Spiral effect
         for(let i = 0; i < 30; i++) {
             let angle = (i / 30) * Math.PI * 2;
             let radius = (layer * 5) + (i * storm.height/20);
@@ -86,23 +133,32 @@ function update() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Update bird with boundary constraints
+    // Update bird
     bird.velocity += bird.gravity;
     bird.y += bird.velocity;
-
-    // Keep bird within canvas bounds
-    if (bird.y + bird.radius > canvas.height) {
-        bird.y = canvas.height - bird.radius;
-        bird.velocity = 0; // Stop vertical movement at bottom
-    }
-    if (bird.y - bird.radius < 0) {
-        bird.y = bird.radius;
-        bird.velocity = 0; // Stop vertical movement at top
-    }
 
     // Draw bird
     ctx.drawImage(philippineFlag, bird.x - bird.radius, bird.y - bird.radius, 
                  bird.radius * 2, bird.radius * 2);
+
+    // Update and draw waves
+    if (waves.length === 0 || waves[waves.length - 1].x < canvas.width - 100) {
+        createWave();
+    }
+    
+    drawWaves();
+    
+    // Check wave collision
+    waves.forEach((wave, index) => {
+        const waveTop = wave.y - wave.amplitude;
+        if (bird.y + bird.radius > waveTop) {
+            gameOver = true;
+        }
+        
+        if (wave.x + wave.width < 0) {
+            waves.splice(index, 1);
+        }
+    });
 
     // Update and draw storms
     for (let i = storms.length - 1; i >= 0; i--) {
@@ -147,6 +203,7 @@ canvas.addEventListener('click', function() {
         bird.y = canvas.height/2;
         bird.velocity = 0;
         storms = [];
+        waves = [];
         score = 0;
         gameOver = false;
         update();
