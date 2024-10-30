@@ -6,8 +6,8 @@ let bird = {
     x: 50,
     y: canvas.height/2,
     velocity: 0,
-    gravity: 0.05,
-    jump: -10,
+    gravity: 0.02,
+    jump: -12,
     radius: 25
 };
 
@@ -27,7 +27,7 @@ floodImage.src = '120814035457-phillipines-8-14-a.jpg';
 function createWave() {
     waves.push({
         x: canvas.width,
-        y: canvas.height - 40, // Position waves at bottom
+        y: canvas.height - 40,
         width: 50,
         height: 30,
         speed: 0.5,
@@ -66,7 +66,7 @@ function drawWaves() {
     ctx.restore();
 }
 
-// Enhanced storm creation
+// Storm creation
 function createStorm() {
     let gap = 280;
     let stormHeight = 60;
@@ -132,9 +132,9 @@ function update() {
     bird.velocity += bird.gravity;
     bird.y += bird.velocity;
 
-    // Keep bird within canvas bounds
-    if (bird.y + bird.radius > canvas.height - 50) { // Adjusted to account for waves
-        bird.y = canvas.height - 50 - bird.radius;
+    // Keep bird within canvas bounds without game over
+    if (bird.y + bird.radius > canvas.height) {
+        bird.y = canvas.height - bird.radius;
         bird.velocity = 0;
     }
     if (bird.y - bird.radius < 0) {
@@ -156,7 +156,11 @@ function update() {
     // Check wave collision
     waves.forEach((wave, index) => {
         const waveTop = wave.y - wave.amplitude;
-        if (bird.y + bird.radius > waveTop) {
+        // Only check collision if bird is within wave area
+        if (bird.x + bird.radius > wave.x && 
+            bird.x - bird.radius < wave.x + wave.width && 
+            bird.y + bird.radius > waveTop && 
+            bird.y + bird.radius < wave.y + wave.height) {
             gameOver = true;
         }
         
