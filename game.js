@@ -114,7 +114,7 @@ function drawWaves() {
 // Storm creation with scaled dimensions
 function createStorm() {
     let gap = 280 * SCALE_FACTOR;
-    let stormHeight = 60 * SCALE_FACTOR;
+    let stormHeight = 80 * SCALE_FACTOR;
     storms.push({
         x: canvas.width,
         y: Math.random() * (canvas.height - gap - stormHeight),
