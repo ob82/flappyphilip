@@ -2,23 +2,27 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Game constants
-const JUMP_FORCE = -6;  // Reduced jump force
-const GRAVITY = 0.3;    // Reduced gravity
+const JUMP_FORCE = -6;
+const GRAVITY = 0.3;
+const BOTTOM_TIME_LIMIT = 5000; // 5 seconds in milliseconds
 
 // Game variables
 let bird = {
     x: 50,
     y: canvas.height/2,
     velocity: 0,
-    gravity:0.3,
-    jump: -15,
-    radius: 20
+    gravity: GRAVITY,
+    jump: JUMP_FORCE,
+    radius: 15,
+    bottomTimer: 0,
+    isAtBottom: false
 };
 
 let storms = [];
 let waves = [];
 let gameOver = false;
 let score = 0;
+let lastTime = 0;
 
 // Load images
 const philippineFlag = new Image();
@@ -32,11 +36,11 @@ function createWave() {
     waves.push({
         x: canvas.width,
         y: canvas.height - 40,
-        width: 90,
+        width: 50,
         height: 30,
         speed: 0.5,
         amplitude: 10,
-        frequency: 0.0005,
+        frequency: 0.002,
         offset: Math.random() * Math.PI * 2
     });
 }
@@ -77,7 +81,7 @@ function createStorm() {
     storms.push({
         x: canvas.width,
         y: Math.random() * (canvas.height - gap - stormHeight),
-        width: 110,
+        width: 90,
         height: stormHeight,
         rotation: 0,
         rotationSpeed: Math.random() * 0.06 + 0.03,
@@ -118,8 +122,22 @@ function drawStorm(storm) {
     ctx.restore();
 }
 
+// Draw bottom timer warning
+function drawBottomTimer() {
+    if (bird.isAtBottom) {
+        const timeLeft = Math.ceil((BOTTOM_TIME_LIMIT - bird.bottomTimer) / 1000);
+        ctx.fillStyle = 'red';
+        ctx.font = '24px Arial';
+        ctx.fillText(`Warning: ${timeLeft}s`, canvas.width/2 - 50, 50);
+    }
+}
+
 // Game loop
-function update() {
+function update(currentTime) {
+    if (!lastTime) lastTime = currentTime;
+    const deltaTime = currentTime - lastTime;
+    lastTime = currentTime;
+
     if (gameOver) {
         ctx.drawImage(floodImage, 0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
@@ -134,15 +152,26 @@ function update() {
 
     // Update bird with smoother movement
     bird.velocity += bird.gravity;
-    // Cap the velocity to prevent extreme speeds
     bird.velocity = Math.max(Math.min(bird.velocity, 10), -10);
     bird.y += bird.velocity;
 
-    // Keep bird within canvas bounds without game over
-    if (bird.y + bird.radius > canvas.height) {
+    // Check if bird is at bottom
+    if (bird.y + bird.radius >= canvas.height) {
         bird.y = canvas.height - bird.radius;
         bird.velocity = 0;
+        bird.isAtBottom = true;
+        bird.bottomTimer += deltaTime;
+        
+        // Check if bird has been at bottom too long
+        if (bird.bottomTimer >= BOTTOM_TIME_LIMIT) {
+            gameOver = true;
+        }
+    } else {
+        bird.isAtBottom = false;
+        bird.bottomTimer = 0;
     }
+
+    // Keep bird within top boundary
     if (bird.y - bird.radius < 0) {
         bird.y = bird.radius;
         bird.velocity = 0;
@@ -151,6 +180,9 @@ function update() {
     // Draw bird
     ctx.drawImage(philippineFlag, bird.x - bird.radius, bird.y - bird.radius, 
                  bird.radius * 2, bird.radius * 2);
+
+    // Draw bottom timer warning if needed
+    drawBottomTimer();
 
     // Update and draw waves
     if (waves.length === 0 || waves[waves.length - 1].x < canvas.width - 100) {
@@ -162,7 +194,6 @@ function update() {
     // Check wave collision
     waves.forEach((wave, index) => {
         const waveTop = wave.y - wave.amplitude;
-        // Only check collision if bird is within wave area
         if (bird.x + bird.radius > wave.x && 
             bird.x - bird.radius < wave.x + wave.width && 
             bird.y + bird.radius > waveTop && 
@@ -183,7 +214,6 @@ function update() {
         
         drawStorm(storm);
 
-        // Storm collision detection
         let dx = bird.x - (storm.x + storm.width/2);
         let dy = bird.y - (storm.y + storm.height/2);
         let distance = Math.sqrt(dx * dx + dy * dy);
@@ -217,10 +247,13 @@ canvas.addEventListener('click', function() {
         // Reset game
         bird.y = canvas.height/2;
         bird.velocity = 0;
+        bird.bottomTimer = 0;
+        bird.isAtBottom = false;
         storms = [];
         waves = [];
         score = 0;
         gameOver = false;
+        lastTime = 0;
         update();
     } else {
         // Smoother bird jump
