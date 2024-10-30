@@ -7,7 +7,7 @@ let bird = {
     y: canvas.height/2,
     velocity: 0,
     gravity: 0.3,
-    jump: -12,
+    jump: -10,
     radius: 25
 };
 
