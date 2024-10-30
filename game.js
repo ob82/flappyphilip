@@ -32,7 +32,7 @@ function createWave() {
         height: 20,
         speed: 0.5,
         amplitude: 6,
-        frequency: 0.2,
+        frequency: 0.002,
         offset: Math.random() * Math.PI * 2 // Random wave phase
     });
 }
