@@ -8,7 +8,7 @@ let bird = {
     velocity: 0,
     gravity: 0.5,
     jump: -10,
-    radius: 25
+    radius: 23
 };
 
 let storms = [];
