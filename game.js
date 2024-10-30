@@ -1,14 +1,18 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Game constants
+const JUMP_FORCE = -6;  // Reduced jump force
+const GRAVITY = 0.3;    // Reduced gravity
+
 // Game variables
 let bird = {
     x: 50,
     y: canvas.height/2,
     velocity: 0,
-    gravity: 0.5,
-    jump: -10,
-    radius: 23
+    gravity: GRAVITY,
+    jump: JUMP_FORCE,
+    radius: 15
 };
 
 let storms = [];
@@ -28,7 +32,7 @@ function createWave() {
     waves.push({
         x: canvas.width,
         y: canvas.height - 40,
-        width: 50,
+        width: 60,
         height: 30,
         speed: 0.5,
         amplitude: 10,
@@ -128,8 +132,10 @@ function update() {
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Update bird with boundary constraints
+    // Update bird with smoother movement
     bird.velocity += bird.gravity;
+    // Cap the velocity to prevent extreme speeds
+    bird.velocity = Math.max(Math.min(bird.velocity, 10), -10);
     bird.y += bird.velocity;
 
     // Keep bird within canvas bounds without game over
@@ -217,8 +223,8 @@ canvas.addEventListener('click', function() {
         gameOver = false;
         update();
     } else {
-        // Bird jump
-        bird.velocity = bird.jump;
+        // Smoother bird jump
+        bird.velocity = JUMP_FORCE;
     }
 });
 
