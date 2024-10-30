@@ -6,9 +6,9 @@ let bird = {
     x: 50,
     y: canvas.height/2,
     velocity: 0,
-    gravity: 2,
+    gravity: 0.3,
     jump: -12,
-    radius: 20
+    radius: 25
 };
 
 let storms = [];
@@ -24,7 +24,7 @@ floodImage.src = '120814035457-phillipines-8-14-a.jpg';
 
 // Enhanced storm creation
 function createStorm() {
-    let gap = 250;
+    let gap = 300;
     let stormHeight = 60;
     storms.push({
         x: canvas.width,
