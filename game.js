@@ -29,9 +29,9 @@ function createWave() {
         x: canvas.width,
         y: canvas.height - 40, // Position waves at bottom
         width: 50,
-        height: 30,
-        speed: 2,
-        amplitude: 10,
+        height: 20,
+        speed: 0.5,
+        amplitude: 6,
         frequency: 0.2,
         offset: Math.random() * Math.PI * 2 // Random wave phase
     });
