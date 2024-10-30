@@ -29,7 +29,7 @@ function createWave() {
         x: canvas.width,
         y: canvas.height - 40, // Position waves at bottom
         width: 80,
-        height: 40,
+        height: 30,
         speed: 2,
         amplitude: 10,
         frequency: 0.02,
