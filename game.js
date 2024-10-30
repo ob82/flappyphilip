@@ -28,7 +28,7 @@ function createWave() {
     waves.push({
         x: canvas.width,
         y: canvas.height - 40, // Position waves at bottom
-        width: 50,
+        width: 30,
         height: 20,
         speed: 0.5,
         amplitude: 6,
