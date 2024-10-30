@@ -10,9 +10,9 @@ let bird = {
     x: 50,
     y: canvas.height/2,
     velocity: 0,
-    gravity: GRAVITY,
-    jump: JUMP_FORCE,
-    radius: 15
+    gravity:0.3,
+    jump: -12,
+    radius: 20
 };
 
 let storms = [];
