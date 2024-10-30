@@ -11,7 +11,7 @@ let bird = {
     y: canvas.height/2,
     velocity: 0,
     gravity:0.3,
-    jump: -12,
+    jump: -15,
     radius: 20
 };
 
@@ -32,11 +32,11 @@ function createWave() {
     waves.push({
         x: canvas.width,
         y: canvas.height - 40,
-        width: 60,
+        width: 90,
         height: 30,
         speed: 0.5,
         amplitude: 10,
-        frequency: 0.002,
+        frequency: 0.0005,
         offset: Math.random() * Math.PI * 2
     });
 }
