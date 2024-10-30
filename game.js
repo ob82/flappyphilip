@@ -22,24 +22,24 @@ philippineFlag.src = 'philippine.gif';
 const floodImage = new Image();
 floodImage.src = '120814035457-phillipines-8-14-a.jpg';
 
-// Enhanced storm creation with more complex rotation patterns
+// Enhanced storm creation
 function createStorm() {
-    let gap = 180; // Reduced gap to make game more challenging
-    let stormHeight = 60; // Increased size by 1.5x
+    let gap = 180;
+    let stormHeight = 60;
     storms.push({
         x: canvas.width,
         y: Math.random() * (canvas.height - gap - stormHeight),
-        width: 90, // Increased width
+        width: 90,
         height: stormHeight,
         rotation: 0,
-        rotationSpeed: Math.random() * 0.06 + 0.03, // Faster rotation
-        scale: Math.random() * 0.5 + 1.5, // Larger scale between 1.5 and 2.0
+        rotationSpeed: Math.random() * 0.06 + 0.03,
+        scale: Math.random() * 0.5 + 1.5,
         opacity: 0.8,
-        layers: 5 // Multiple layers for more complex storm appearance
+        layers: 5
     });
 }
 
-// Enhanced storm drawing with spiral effect
+// Enhanced storm drawing
 function drawStorm(storm) {
     ctx.save();
     ctx.translate(storm.x + storm.width/2, storm.y + storm.height/2);
@@ -73,7 +73,7 @@ function drawStorm(storm) {
     ctx.restore();
 }
 
-// Game loop using requestAnimationFrame for smoother animation
+// Game loop
 function update() {
     if (gameOver) {
         ctx.drawImage(floodImage, 0, 0, canvas.width, canvas.height);
@@ -91,6 +91,16 @@ function update() {
     bird.velocity += bird.gravity;
     bird.y += bird.velocity;
 
+    // Keep bird within canvas bounds
+    if (bird.y + bird.radius > canvas.height) {
+        bird.y = canvas.height - bird.radius;
+        bird.velocity = 0;
+    }
+    if (bird.y - bird.radius < 0) {
+        bird.y = bird.radius;
+        bird.velocity = 0;
+    }
+
     // Draw bird
     ctx.drawImage(philippineFlag, bird.x - bird.radius, bird.y - bird.radius, 
                  bird.radius * 2, bird.radius * 2);
@@ -98,12 +108,12 @@ function update() {
     // Update and draw storms
     for (let i = storms.length - 1; i >= 0; i--) {
         let storm = storms[i];
-        storm.x -= 3; // Slightly faster movement
+        storm.x -= 3;
         storm.rotation += storm.rotationSpeed;
         
         drawStorm(storm);
 
-        // Enhanced collision detection
+        // Storm collision detection
         let dx = bird.x - (storm.x + storm.width/2);
         let dy = bird.y - (storm.y + storm.height/2);
         let distance = Math.sqrt(dx * dx + dy * dy);
@@ -118,7 +128,7 @@ function update() {
         }
     }
 
-    // Create new storms more frequently
+    // Create new storms
     if (storms.length === 0 || storms[storms.length - 1].x < canvas.width - 160) {
         createStorm();
     }
