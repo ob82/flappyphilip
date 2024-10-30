@@ -1,19 +1,56 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Set canvas size based on device
+function resizeCanvas() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+}
+resizeCanvas();
+
+// Add viewport meta tag for mobile devices
+const meta = document.createElement('meta');
+meta.name = 'viewport';
+meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0';
+document.getElementsByTagName('head')[0].appendChild(meta);
+
+// Add CSS to prevent scrolling and bouncing on mobile
+const style = document.createElement('style');
+style.textContent = `
+    body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        position: fixed;
+        touch-action: none;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        user-select: none;
+    }
+    canvas {
+        display: block;
+        touch-action: none;
+    }
+`;
+document.head.appendChild(style);
+
 // Game constants
 const JUMP_FORCE = -6;
 const GRAVITY = 0.3;
-const BOTTOM_TIME_LIMIT = 5000; // 5 seconds in milliseconds
+const BOTTOM_TIME_LIMIT = 5000;
+
+// Scale factors based on screen size
+const SCALE_FACTOR = Math.min(canvas.width / 800, canvas.height / 600);
+const BIRD_SIZE = 15 * SCALE_FACTOR;
 
 // Game variables
 let bird = {
-    x: 50,
+    x: canvas.width * 0.2,
     y: canvas.height/2,
     velocity: 0,
     gravity: GRAVITY,
     jump: JUMP_FORCE,
-    radius: 15,
+    radius: BIRD_SIZE,
     bottomTimer: 0,
     isAtBottom: false
 };
@@ -31,15 +68,15 @@ philippineFlag.src = 'philippine.gif';
 const floodImage = new Image();
 floodImage.src = '120814035457-phillipines-8-14-a.jpg';
 
-// Wave creation
+// Wave creation with scaled dimensions
 function createWave() {
     waves.push({
         x: canvas.width,
-        y: canvas.height - 40,
-        width: 50,
-        height: 30,
-        speed: 0.5,
-        amplitude: 10,
+        y: canvas.height - 40 * SCALE_FACTOR,
+        width: 50 * SCALE_FACTOR,
+        height: 30 * SCALE_FACTOR,
+        speed: 0.5 * SCALE_FACTOR,
+        amplitude: 10 * SCALE_FACTOR,
         frequency: 0.002,
         offset: Math.random() * Math.PI * 2
     });
@@ -74,18 +111,18 @@ function drawWaves() {
     ctx.restore();
 }
 
-// Storm creation
+// Storm creation with scaled dimensions
 function createStorm() {
-    let gap = 280;
-    let stormHeight = 60;
+    let gap = 280 * SCALE_FACTOR;
+    let stormHeight = 60 * SCALE_FACTOR;
     storms.push({
         x: canvas.width,
         y: Math.random() * (canvas.height - gap - stormHeight),
-        width: 90,
+        width: 90 * SCALE_FACTOR,
         height: stormHeight,
         rotation: 0,
         rotationSpeed: Math.random() * 0.06 + 0.03,
-        scale: Math.random() * 0.5 + 1.5,
+        scale: (Math.random() * 0.5 + 1.5) * SCALE_FACTOR,
         opacity: 0.8,
         layers: 5
     });
@@ -127,8 +164,8 @@ function drawBottomTimer() {
     if (bird.isAtBottom) {
         const timeLeft = Math.ceil((BOTTOM_TIME_LIMIT - bird.bottomTimer) / 1000);
         ctx.fillStyle = 'red';
-        ctx.font = '24px Arial';
-        ctx.fillText(`Warning: ${timeLeft}s`, canvas.width/2 - 50, 50);
+        ctx.font = `${24 * SCALE_FACTOR}px Arial`;
+        ctx.fillText(`Warning: ${timeLeft}s`, canvas.width/2 - 50 * SCALE_FACTOR, 50 * SCALE_FACTOR);
     }
 }
 
@@ -141,16 +178,16 @@ function update(currentTime) {
     if (gameOver) {
         ctx.drawImage(floodImage, 0, 0, canvas.width, canvas.height);
         ctx.fillStyle = 'white';
-        ctx.font = '30px Arial';
-        ctx.fillText('Game Over', canvas.width/2 - 70, canvas.height/2);
-        ctx.font = '20px Arial';
-        ctx.fillText('Click to restart', canvas.width/2 - 60, canvas.height/2 + 40);
+        ctx.font = `${30 * SCALE_FACTOR}px Arial`;
+        ctx.fillText('Game Over', canvas.width/2 - 70 * SCALE_FACTOR, canvas.height/2);
+        ctx.font = `${20 * SCALE_FACTOR}px Arial`;
+        ctx.fillText('Tap to restart', canvas.width/2 - 60 * SCALE_FACTOR, canvas.height/2 + 40 * SCALE_FACTOR);
         return;
     }
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-    // Update bird with smoother movement
+    // Update bird
     bird.velocity += bird.gravity;
     bird.velocity = Math.max(Math.min(bird.velocity, 10), -10);
     bird.y += bird.velocity;
@@ -162,7 +199,6 @@ function update(currentTime) {
         bird.isAtBottom = true;
         bird.bottomTimer += deltaTime;
         
-        // Check if bird has been at bottom too long
         if (bird.bottomTimer >= BOTTOM_TIME_LIMIT) {
             gameOver = true;
         }
@@ -181,11 +217,10 @@ function update(currentTime) {
     ctx.drawImage(philippineFlag, bird.x - bird.radius, bird.y - bird.radius, 
                  bird.radius * 2, bird.radius * 2);
 
-    // Draw bottom timer warning if needed
     drawBottomTimer();
 
     // Update and draw waves
-    if (waves.length === 0 || waves[waves.length - 1].x < canvas.width - 100) {
+    if (waves.length === 0 || waves[waves.length - 1].x < canvas.width - 100 * SCALE_FACTOR) {
         createWave();
     }
     
@@ -209,7 +244,7 @@ function update(currentTime) {
     // Update and draw storms
     for (let i = storms.length - 1; i >= 0; i--) {
         let storm = storms[i];
-        storm.x -= 3;
+        storm.x -= 3 * SCALE_FACTOR;
         storm.rotation += storm.rotationSpeed;
         
         drawStorm(storm);
@@ -229,22 +264,22 @@ function update(currentTime) {
     }
 
     // Create new storms
-    if (storms.length === 0 || storms[storms.length - 1].x < canvas.width - 160) {
+    if (storms.length === 0 || storms[storms.length - 1].x < canvas.width - 160 * SCALE_FACTOR) {
         createStorm();
     }
 
     // Draw score
     ctx.fillStyle = 'white';
-    ctx.font = '20px Arial';
-    ctx.fillText('Score: ' + score, 10, 30);
+    ctx.font = `${20 * SCALE_FACTOR}px Arial`;
+    ctx.fillText('Score: ' + score, 10 * SCALE_FACTOR, 30 * SCALE_FACTOR);
 
     requestAnimationFrame(update);
 }
 
-// Event listeners
-canvas.addEventListener('click', function() {
+// Event listeners for both mouse click and touch
+function handleInteraction(event) {
+    event.preventDefault();
     if (gameOver) {
-        // Reset game
         bird.y = canvas.height/2;
         bird.velocity = 0;
         bird.bottomTimer = 0;
@@ -256,9 +291,20 @@ canvas.addEventListener('click', function() {
         lastTime = 0;
         update();
     } else {
-        // Smoother bird jump
-        bird.velocity = JUMP_FORCE;
+        bird.velocity = JUMP_FORCE * SCALE_FACTOR;
     }
+}
+
+canvas.addEventListener('click', handleInteraction);
+canvas.addEventListener('touchstart', handleInteraction);
+
+// Handle window resize
+window.addEventListener('resize', function() {
+    resizeCanvas();
+    // Recalculate scale factor
+    const newScaleFactor = Math.min(canvas.width / 800, canvas.height / 600);
+    bird.radius = 15 * newScaleFactor;
+    bird.x = canvas.width * 0.2;
 });
 
 // Start game
