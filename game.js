@@ -24,12 +24,12 @@ floodImage.src = '120814035457-phillipines-8-14-a.jpg';
 
 // Enhanced storm creation
 function createStorm() {
-    let gap = 220;
+    let gap = 250;
     let stormHeight = 60;
     storms.push({
         x: canvas.width,
         y: Math.random() * (canvas.height - gap - stormHeight),
-        width: 110,
+        width: 130,
         height: stormHeight,
         rotation: 0,
         rotationSpeed: Math.random() * 0.06 + 0.03,
