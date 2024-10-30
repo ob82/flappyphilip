@@ -4,7 +4,7 @@ const ctx = canvas.getContext('2d');
 // Game constants
 const JUMP_FORCE = -6;
 const GRAVITY = 0.3;
-const BOTTOM_TIME_LIMIT = 50; // 5 seconds in milliseconds
+const BOTTOM_TIME_LIMIT = 5000; // 5 seconds in milliseconds
 
 // Game variables
 let bird = {
