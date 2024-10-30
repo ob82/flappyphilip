@@ -35,8 +35,8 @@ style.textContent = `
 document.head.appendChild(style);
 
 // Game constants
-const JUMP_FORCE = -6;
-const GRAVITY = 0.3;
+const JUMP_FORCE = -9;
+const GRAVITY = 0.2;
 const BOTTOM_TIME_LIMIT = 5000;
 
 // Scale factors based on screen size
