@@ -28,11 +28,11 @@ function createWave() {
     waves.push({
         x: canvas.width,
         y: canvas.height - 40, // Position waves at bottom
-        width: 80,
+        width: 50,
         height: 30,
         speed: 2,
         amplitude: 10,
-        frequency: 0.02,
+        frequency: 0.2,
         offset: Math.random() * Math.PI * 2 // Random wave phase
     });
 }
@@ -78,7 +78,7 @@ function createStorm() {
     storms.push({
         x: canvas.width,
         y: Math.random() * (canvas.height - gap - stormHeight),
-        width: 130,
+        width: 90,
         height: stormHeight,
         rotation: 0,
         rotationSpeed: Math.random() * 0.06 + 0.03,
