@@ -41,7 +41,7 @@ const BOTTOM_TIME_LIMIT = 5000;
 
 // Scale factors based on screen size
 const SCALE_FACTOR = Math.min(canvas.width / 800, canvas.height / 600);
-const BIRD_SIZE = 15 * SCALE_FACTOR;
+const BIRD_SIZE = 25 * SCALE_FACTOR;
 
 // Game variables
 let bird = {
@@ -77,7 +77,7 @@ function createWave() {
         height: 30 * SCALE_FACTOR,
         speed: 0.5 * SCALE_FACTOR,
         amplitude: 10 * SCALE_FACTOR,
-        frequency: 0.002,
+        frequency: 0.02,
         offset: Math.random() * Math.PI * 2
     });
 }
