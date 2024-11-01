@@ -75,9 +75,9 @@ function createWave() {
         y: canvas.height - 40 * SCALE_FACTOR,
         width: 50 * SCALE_FACTOR,
         height: 30 * SCALE_FACTOR,
-        speed: 0.5 * SCALE_FACTOR,
+        speed:  1 * SCALE_FACTOR,
         amplitude: 10 * SCALE_FACTOR,
-        frequency: 0.02,
+        frequency: 0.2,
         offset: Math.random() * Math.PI * 2
     });
 }
